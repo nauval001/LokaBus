@@ -35,4 +35,12 @@ class HomeController extends Controller
 
         return view('tickets.index', compact('schedules', 'request'));
     }
+
+    public function show($id)
+    {
+        // Mengambil data jadwal beserta relasi bus dan kursi
+        $schedule = Schedule::with(['bus', 'seats'])->findOrFail($id);
+
+        return view('tickets.show', compact('schedule'));
+    }
 }

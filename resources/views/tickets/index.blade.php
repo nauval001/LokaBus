@@ -88,9 +88,9 @@
                             <p class="text-lg font-extrabold text-blue-600 mb-3">
                                 Rp {{ number_format($schedule->price, 0, ',', '.') }}
                             </p>
-                            <a href="#" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-2 px-6 rounded-xl transition text-center shadow-sm">
-                                Pilih Kursi
-                            </a>
+                                <a href="{{ route('tickets.show', $schedule->id) }}" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-2 px-6 rounded-xl transition text-center shadow-sm">
+                                    Pilih Kursi
+                                </a>
                         </div>
                     </div>
                 @endforeach
