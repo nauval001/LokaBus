@@ -111,8 +111,7 @@
                         </div>
                     </div>
 
-                    <!-- Nanti action-nya akan diarahkan ke route checkout -->
-                    <form action="#" method="POST">
+                    <form action="{{ route('checkout.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="schedule_id" value="{{ $schedule->id }}">
                         <input type="hidden" name="selected_seats" id="selected-seats-input" required>
