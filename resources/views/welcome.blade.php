@@ -64,6 +64,34 @@
             </form>
         </div>
     </section>
+    
+<section class="max-w-7xl mx-auto px-4 py-20">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">Kabar LokaBus Terbaru</h2>
+            <p class="text-gray-500 mt-2">Dapatkan info rute baru, tips perjalanan, dan promo menarik dari kami.</p>
+        </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            @forelse($latestArticles as $article)
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
+                    @if($article->image)
+                        <img src="{{ asset('storage/' . $article->image) }}" class="w-full h-48 object-cover">
+                    @else
+                        <div class="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-400">Gambar Tidak Tersedia</div>
+                    @endif
+                    <div class="p-6">
+                        <p class="text-xs text-blue-600 font-bold uppercase mb-2">{{ $article->created_at->format('d M Y') }}</p>
+                        <h3 class="font-bold text-gray-900 text-lg mb-3 line-clamp-2">{{ $article->title }}</h3>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ Str::limit($article->content, 100) }}</p>
+                        <a href="#" class="text-blue-600 hover:text-blue-800 font-semibold text-sm">Baca selengkapnya &rarr;</a>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-3 text-center text-gray-500 py-8">
+                    Belum ada artikel terbaru.
+                </div>
+            @endforelse
+        </div>
+    </section>
 </body>
 </html>

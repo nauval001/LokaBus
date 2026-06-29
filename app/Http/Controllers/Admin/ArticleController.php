@@ -3,63 +3,88 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $articles = Article::with('author')->latest()->paginate(10);
+        return view('admin.articles.index', compact('articles'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('admin.articles.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('articles', 'public');
+        }
+
+        Article::create([
+            'title' => $request->title,
+            'slug' => Str::slug($request->title) . '-' . time(),
+            'content' => $request->content,
+            'image' => $imagePath,
+            'author_id' => Auth::id(),
+        ]);
+
+        return redirect()->route('admin.articles.index')->with('success', 'Artikel berhasil diterbitkan!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Article $article)
     {
-        //
+        return view('admin.articles.edit', compact('article'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Article $article)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $imagePath = $article->image;
+        if ($request->hasFile('image')) {
+            // Hapus gambar lama jika ada
+            if ($imagePath && Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
+            $imagePath = $request->file('image')->store('articles', 'public');
+        }
+
+        $article->update([
+            'title' => $request->title,
+            'slug' => Str::slug($request->title) . '-' . time(),
+            'content' => $request->content,
+            'image' => $imagePath,
+        ]);
+
+        return redirect()->route('admin.articles.index')->with('success', 'Artikel berhasil diperbarui!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Article $article)
     {
-        //
-    }
+        if ($article->image && Storage::disk('public')->exists($article->image)) {
+            Storage::disk('public')->delete($article->image);
+        }
+        $article->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('admin.articles.index')->with('success', 'Artikel berhasil dihapus!');
     }
 }
